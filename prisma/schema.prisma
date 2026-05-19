@@ -1,0 +1,90 @@
+// Prowider Lead Distribution System - Prisma Schema (MySQL)
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Service {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  code        String   @unique  // "SERVICE_1", "SERVICE_2", "SERVICE_3"
+  createdAt   DateTime @default(now())
+  leads       Lead[]
+  allocationCounters AllocationCounter[]
+}
+
+model Provider {
+  id              Int      @id @default(autoincrement())
+  name            String   @unique
+  code            String   @unique  // "P1" through "P8"
+  monthlyQuota    Int      @default(10)
+  createdAt       DateTime @default(now())
+  assignments     LeadAssignment[]
+  allocationCounters AllocationCounter[]
+}
+
+model Lead {
+  id          Int      @id @default(autoincrement())
+  name        String
+  phone       String
+  city        String
+  description String   @db.Text
+  serviceId   Int
+  createdAt   DateTime @default(now())
+  service     Service  @relation(fields: [serviceId], references: [id])
+  assignments LeadAssignment[]
+
+  // DB-level duplicate prevention: same phone + same service not allowed
+  @@unique([phone, serviceId], name: "unique_phone_service")
+  @@index([serviceId])
+}
+
+model LeadAssignment {
+  id          Int      @id @default(autoincrement())
+  leadId      Int
+  providerId  Int
+  assignedAt  DateTime @default(now())
+  lead        Lead     @relation(fields: [leadId], references: [id])
+  provider    Provider @relation(fields: [providerId], references: [id])
+
+  @@unique([leadId, providerId], name: "unique_lead_provider")
+  @@index([providerId])
+  @@index([leadId])
+}
+
+// Tracks fair round-robin rotation position per service
+// This persists across server restarts (DB-backed)
+model AllocationCounter {
+  id          Int      @id @default(autoincrement())
+  serviceId   Int
+  providerId  Int
+  position    Int      @default(0)  // order in the pool
+  turnCount   Int      @default(0)  // how many times this provider was picked
+  service     Service  @relation(fields: [serviceId], references: [id])
+  provider    Provider @relation(fields: [providerId], references: [id])
+
+  @@unique([serviceId, providerId])
+  @@index([serviceId])
+}
+
+// Tracks monthly lead count per provider (resets via webhook)
+model ProviderMonthlyCount {
+  id          Int      @id @default(autoincrement())
+  providerId  Int      @unique
+  count       Int      @default(0)
+  monthYear   String   // "2024-01" format
+  updatedAt   DateTime @updatedAt
+}
+
+// Webhook idempotency - store processed event IDs
+model WebhookEvent {
+  id           Int      @id @default(autoincrement())
+  eventId      String   @unique  // idempotency key
+  eventType    String
+  processedAt  DateTime @default(now())
+  payload      Json?
+}
