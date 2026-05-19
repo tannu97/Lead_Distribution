@@ -2,17 +2,15 @@
   "name": "prowider-lead-distribution",
   "version": "1.0.0",
   "private": true,
-
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && next build",
+    "build": "next build",
     "start": "next start",
     "db:push": "prisma db push",
     "db:seed": "node prisma/seed.js",
     "db:studio": "prisma studio",
     "postinstall": "prisma generate"
   },
-
   "dependencies": {
     "@prisma/client": "^5.14.0",
     "clsx": "^2.1.1",
@@ -25,17 +23,16 @@
     "tailwind-merge": "^2.3.0",
     "uuid": "^9.0.1"
   },
-
   "devDependencies": {
-  "@types/node": "^20",
-  "@types/react": "^18",
-  "@types/react-dom": "^18",
-  "@types/uuid": "^9.0.8",
-  "autoprefixer": "^10",
-  "eslint": "^9.0.0",
-  "eslint-config-next": "^16.2.6",
-  "postcss": "^8",
-  "tailwindcss": "^3.4.3",
-  "typescript": "^5"
-}
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "@types/uuid": "^9.0.8",
+    "autoprefixer": "^10",
+    "eslint": "^9.0.0",
+    "eslint-config-next": "^16.2.6",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.3",
+    "typescript": "^5"
+  }
 }
