@@ -47,11 +47,12 @@ export async function assignProvidersToLead(
 
     // Lock allocation counters for this service to prevent race conditions
     // Raw query for SELECT FOR UPDATE (Prisma doesn't support this natively)
-    await tx.$executeRaw`
-      SELECT id FROM AllocationCounter 
-      WHERE serviceId = ${service.id} 
-      FOR UPDATE
-    `;
+   await tx.$executeRaw`
+  SELECT id
+  FROM "AllocationCounter"
+  WHERE "serviceId" = ${service.id}
+  FOR UPDATE
+`;
 
     // Get current month for quota check
     const currentMonth = new Date().toISOString().slice(0, 7);
