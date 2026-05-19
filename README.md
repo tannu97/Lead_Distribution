@@ -3,7 +3,7 @@
 A production-grade lead distribution platform built with **Next.js 14**, **MySQL**, **Prisma**, and **Server-Sent Events**.
 
 ## 🚀 Live Demo
-[Deploy URL here]
+[lead-distribution-7z17.vercel.app]
 
 ## ⚙️ Tech Stack
 - **Frontend**: Next.js 14 (App Router), Tailwind CSS, Lucide Icons
